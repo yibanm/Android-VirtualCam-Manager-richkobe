@@ -62,13 +62,17 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Create Gradle Wrapper
+      # wrapper 已提交进仓库（manager-app/gradlew + gradle/wrapper/），不再动态生成。
+      # 原做法用 setup-gradle 的系统 gradle 跑 `gradle wrapper`，而该 gradle 是 9.8.1；
+      # 生成 wrapper 这一步本身要先评估项目，AGP 8.13.2 依赖 Gradle 9.6 已移除的内部 API
+      # InternalProblems，于是插件加载直接失败（run 40269537509 实测）。
+      - name: Make gradlew executable
         working-directory: manager-app
         run: |
-          if [ ! -f gradlew ]; then
-            gradle wrapper --gradle-version 8.14.3 --distribution-type bin
-          fi
+          test -f gradlew || { echo "ERROR: gradlew missing from repo"; exit 1; }
+          test -f gradle/wrapper/gradle-wrapper.jar || { echo "ERROR: wrapper jar missing"; exit 1; }
           chmod +x gradlew
+          ./gradlew --version
 
       # 签名密钥来自仓库 secret（VCAM_KEYSTORE_BASE64 等）。
       # 未配置 secret 时自动跳过签名，产出 unsigned APK 并在日志中明确标注，

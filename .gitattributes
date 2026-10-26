@@ -7,6 +7,8 @@
 update-binary     text eol=lf
 updater-script    text eol=lf
 module.prop       text eol=lf
+# gradlew 无扩展名但是要在 Linux/CI 上执行的 shell 脚本，同样必须 LF
+gradlew           text eol=lf
 
 # 自身也锁定 LF，避免本文件在 Windows 上被转成 CRLF
 .gitattributes    text eol=lf
