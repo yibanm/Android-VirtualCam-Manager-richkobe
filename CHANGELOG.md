@@ -17,6 +17,7 @@ APK 命名中的 ABI 段由构建脚本从产物内部实测得出，不写死�
 - **修复**：release APK 此前未签名。上游 CI 的 `upload-artifact` 用 `apk/release/*.apk` 通配收集产物，而 `build.gradle.kts` 的 release 块没有 `signingConfig`，AGP 实际产出 `app-release-unsigned.apk`——文件名看着像正式包，装机时会被系统以缺少证书拒绝。现已加入 `signingConfigs.release`，密钥从 `keystore.properties` 读取（该文件不入库），并在 CI 中用 `apksigner verify` + `zipalign -c` 断言签名真实有效后才允许上传。
 - **修复**：ShadowHook AAR 下载失败时此前只打印警告并继续打包，产出的模块缺少 `libshadowhook.so`，刷入后 hook 必然失效却无从察觉。现改为下载失败即 CI 失败，并增加关键符号断言，防止未来 ShadowHook 改符号名导致的运行时静默失败。
 - **修复**：Magisk 模块此前未校验 arm64 的 zygisk 二进制是否真的编译产出。现增加断言，`magisk-module/zygisk/arm64-v8a.so` 缺失即 CI 失败。
+- **修复**：模块脚本行尾导致的刷机失败。在 Windows（`core.autocrlf=true`）本机打包时，工作区的 Magisk 脚本被转成 CRLF，`META-INF/com/google/android/update-binary` 的 shebang 变成 `#!/sbin/sh\r`——recovery 按 `/sbin/sh\r` 找解释器会直接失败，而它是刷机执行的第一个脚本。上游仓库的 blob 本身是 LF、CI 在 ubuntu 上不受影响，问题只在 Windows 本机打包路径。现新增 `.gitattributes`，将 `*.sh`、`update-binary`、`updater-script`、`module.prop` 锁定为 `eol=lf`，二进制文件（`.so`/`.apk`/`.zip`/`.jks`）标记 `binary` 禁止转换，不再依赖各人的 autocrlf 配置。
 
 ### 组件升级
 
