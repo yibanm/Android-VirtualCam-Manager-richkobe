@@ -55,7 +55,7 @@ jobs:
         run: |
           if [ -z "$KEYSTORE_BASE64" ]; then
             echo "has_key=false" >> "$GITHUB_OUTPUT"
-            echo "WARN: VCAM_KEYSTORE_BASE64 not set - build will be UNSIGNED"
+            echo "WARN: VCAM_KEYSTORE_BASE64 not set - falling back to DEBUG signing (APK still installable)"
             exit 0
           fi
           echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
@@ -78,10 +78,9 @@ jobs:
         working-directory: manager-app
         run: ./gradlew assembleRelease --stacktrace --no-daemon
 
-      # 签名校验：只有真签上名的包才允许作为 release 产物上传。
+      # 签名校验：现在总会签名（正式密钥或 debug 回退），故无条件校验。
       # 这一步是防止上游那种"artifact 名字像正式包、实则 unsigned"的问题复发。
       - name: Verify release APK signature
-        if: steps.signing.outputs.has_key == 'true'
         run: |
           APK=$(ls manager-app/app/build/outputs/apk/release/*.apk | head -1)
           echo "Verifying $APK"

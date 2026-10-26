@@ -53,9 +53,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // 有密钥才挂签名配置，否则保持 unsigned（AGP 缺省会跳过签名步骤）
-            if (hasReleaseSigning) {
-                signingConfig = signingConfigs.getByName("release")
+            // 有正式密钥就用它；没有则回退到 debug 签名，保证产物始终可装机。
+            // 不回退的话 AGP 会产出 app-release-unsigned.apk —— 文件名像正式包，
+            // 装机却被系统以缺少证书拒绝（这正是上游 CI 的原有缺陷）。
+            signingConfig = if (hasReleaseSigning) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
             }
         }
     }
