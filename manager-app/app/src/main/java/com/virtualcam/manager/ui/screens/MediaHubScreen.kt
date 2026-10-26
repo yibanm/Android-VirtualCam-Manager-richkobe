@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.VideoFile
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,9 +41,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier as ComposeModifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.virtualcam.manager.R
 import com.virtualcam.manager.data.FileSystemRepository
 import com.virtualcam.manager.data.MediaImportHelper
+import com.virtualcam.manager.ui.components.GitHubRepoAction
 import com.virtualcam.manager.ui.theme.Danger
 import com.virtualcam.manager.ui.theme.Primary
 import com.virtualcam.manager.ui.theme.Success
@@ -73,12 +75,15 @@ fun MediaHubScreen() {
         }
     }
 
+    val msgProcessing = stringResource(R.string.media_msg_processing)
+
     fun onPicked(uri: Uri?) {
         if (uri == null) return
         scope.launch {
             importing = true
-            message = "Processing…"
+            message = msgProcessing
             messageOk = true
+            // importFromUri 回传的 message 已在 data 层按当前语言本地化
             val result = importer.importFromUri(context, uri)
             message = result.message
             messageOk = result.success
@@ -93,7 +98,14 @@ fun MediaHubScreen() {
 
     LaunchedEffect(Unit) { refresh() }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Media Hub") }) }) { padding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.media_title)) },
+                actions = { GitHubRepoAction() }
+            )
+        }
+    ) { padding ->
         Column(
             modifier = ComposeModifier
                 .fillMaxSize()
@@ -102,7 +114,10 @@ fun MediaHubScreen() {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Upload spoof media", style = MaterialTheme.typography.titleLarge)
+            Text(
+                stringResource(R.string.media_section_upload),
+                style = MaterialTheme.typography.titleLarge
+            )
             Card(modifier = ComposeModifier.fillMaxWidth()) {
                 Column(
                     modifier = ComposeModifier.padding(16.dp),
@@ -116,9 +131,12 @@ fun MediaHubScreen() {
                         )
                         Spacer(modifier = ComposeModifier.width(12.dp))
                         Column {
+                            // virtual.mp4 是模块约定的固定文件名，不翻译
                             Text("virtual.mp4", style = MaterialTheme.typography.titleMedium)
                             Text(
-                                if (hasVideo) "Ready" else "Not installed",
+                                stringResource(
+                                    if (hasVideo) R.string.media_state_ready else R.string.media_state_missing
+                                ),
                                 color = if (hasVideo) Success else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -140,7 +158,7 @@ fun MediaHubScreen() {
                     ) {
                         Icon(Icons.Default.VideoFile, null)
                         Spacer(modifier = ComposeModifier.width(8.dp))
-                        Text("Pick video")
+                        Text(stringResource(R.string.media_pick_video))
                     }
                     Button(
                         onClick = {
@@ -153,27 +171,27 @@ fun MediaHubScreen() {
                     ) {
                         Icon(Icons.Default.Image, null)
                         Spacer(modifier = ComposeModifier.width(8.dp))
-                        Text("Pick image (→ looping MP4)")
+                        Text(stringResource(R.string.media_pick_image))
                     }
                     OutlinedButton(
                         onClick = { pickAny.launch("*/*") },
                         enabled = !importing,
                         modifier = ComposeModifier.fillMaxWidth()
                     ) {
-                        Text("Pick any file")
+                        Text(stringResource(R.string.media_pick_any))
                     }
                     if (hasVideo) {
                         TextButton(
                             onClick = {
                                 scope.launch {
                                     repo.removeVirtualVideo()
-                                    message = "removed"
+                                    message = context.getString(R.string.media_removed)
                                     messageOk = true
                                     refresh()
                                 }
                             },
                             colors = ButtonDefaults.textButtonColors(contentColor = Danger)
-                        ) { Text("Remove virtual.mp4") }
+                        ) { Text(stringResource(R.string.media_remove)) }
                     }
                 }
             }
@@ -181,7 +199,8 @@ fun MediaHubScreen() {
                 Text(it, color = if (messageOk) Success else Danger)
             }
             if (listing.isNotEmpty()) {
-                Text("Camera1 contents")
+                Text(stringResource(R.string.media_camera1_contents))
+                // 列出的文件名是磁盘上的真实名字，原样显示
                 listing.forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
             }
         }

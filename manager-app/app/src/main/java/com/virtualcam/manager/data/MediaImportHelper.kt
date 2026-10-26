@@ -13,6 +13,7 @@ import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.net.Uri
 import android.webkit.MimeTypeMap
+import com.virtualcam.manager.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -44,7 +45,10 @@ class MediaImportHelper(
             val isVideo = mime.startsWith("video/")
 
             if (!isImage && !isVideo) {
-                return@withContext ImportResult(false, "Unsupported type: $mime")
+                return@withContext ImportResult(
+                    false,
+                    context.getString(R.string.msg_import_unsupported, mime)
+                )
             }
 
             val cacheDir = File(context.cacheDir, "vcam_import").apply { mkdirs() }
@@ -53,10 +57,13 @@ class MediaImportHelper(
             // Stream content into app-private cache (works with Photo Picker / SAF)
             context.contentResolver.openInputStream(uri)?.use { input ->
                 FileOutputStream(workFile).use { out -> input.copyTo(out) }
-            } ?: return@withContext ImportResult(false, "Cannot read selected file")
+            } ?: return@withContext ImportResult(
+                false,
+                context.getString(R.string.msg_import_unreadable)
+            )
 
             if (workFile.length() < 32) {
-                return@withContext ImportResult(false, "Selected file is empty")
+                return@withContext ImportResult(false, context.getString(R.string.msg_import_empty))
             }
 
             val mp4ToInstall: File = if (isVideo) {
@@ -67,7 +74,10 @@ class MediaImportHelper(
             } else {
                 // Decode image → short looping H.264 mp4
                 val bmp = decodeBitmap(workFile)
-                    ?: return@withContext ImportResult(false, "Could not decode image")
+                    ?: return@withContext ImportResult(
+                        false,
+                        context.getString(R.string.msg_import_decode_fail)
+                    )
                 val outMp4 = File(cacheDir, "virtual_from_image.mp4")
                 encodeStillToMp4(bmp, outMp4)
                 // Also drop a still for takePicture-style paths
@@ -77,13 +87,16 @@ class MediaImportHelper(
             }
 
             if (!mp4ToInstall.exists() || mp4ToInstall.length() < 100) {
-                return@withContext ImportResult(false, "Failed to prepare MP4")
+                return@withContext ImportResult(false, context.getString(R.string.msg_import_mp4_fail))
             }
 
             // Root-install into classic VCAM path
             val ok = fs.placeVirtualVideo(mp4ToInstall.absolutePath)
             if (!ok) {
-                return@withContext ImportResult(false, "Root copy to Camera1 failed. Grant root and retry.")
+                return@withContext ImportResult(
+                    false,
+                    context.getString(R.string.msg_import_root_fail)
+                )
             }
 
             // Image still (optional, best-effort)
@@ -103,17 +116,23 @@ class MediaImportHelper(
                 "echo 'source=app_picker' > /data/adb/virtualcam/last_import"
             )
 
-            val kind = if (isImage) "image (encoded to looping MP4)" else "video"
+            val kind = context.getString(
+                if (isImage) R.string.msg_kind_image else R.string.msg_kind_video
+            )
             ImportResult(
                 success = true,
-                message = "Installed $kind as virtual.mp4\n" +
-                        "/DCIM/Camera1/virtual.mp4\n" +
-                        "VirtualCam enabled. Open a camera app to use it.",
+                message = context.getString(R.string.msg_import_ok, kind),
                 isImage = isImage,
                 destPath = FileSystemRepository.GLOBAL_CAMERA1 + "/" + FileSystemRepository.VIRTUAL_MP4
             )
         } catch (t: Throwable) {
-            ImportResult(false, "Import error: ${t.message ?: t.javaClass.simpleName}")
+            ImportResult(
+                false,
+                context.getString(
+                    R.string.msg_import_error,
+                    t.message ?: t.javaClass.simpleName
+                )
+            )
         }
     }
 

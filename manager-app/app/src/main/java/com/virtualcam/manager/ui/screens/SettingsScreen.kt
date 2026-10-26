@@ -7,8 +7,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.virtualcam.manager.BuildConfig
+import com.virtualcam.manager.R
 import com.virtualcam.manager.data.FileSystemRepository
+import com.virtualcam.manager.ui.components.GitHubRepoAction
 import com.virtualcam.manager.ui.theme.Primary
 import kotlinx.coroutines.launch
 
@@ -49,7 +53,10 @@ fun SettingsScreen() {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Settings & Flags") })
+            TopAppBar(
+                title = { Text(stringResource(R.string.settings_title)) },
+                actions = { GitHubRepoAction() }
+            )
         }
     ) { padding ->
         if (isLoading) {
@@ -69,55 +76,55 @@ fun SettingsScreen() {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Runtime Flags",
+                    text = stringResource(R.string.settings_flags_section),
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    text = "These create/delete classic .jpg sentinel files under DCIM/Camera1. " +
-                            "The primary ON/OFF switch is the Home screen toggle (writes /data/adb/virtualcam/enabled).",
+                    text = stringResource(R.string.settings_flags_intro),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
                 FlagSwitch(
-                    title = "Disable Module",
-                    subtitle = "Creates disable.jpg – forces gate_off even if enabled flag is set",
+                    title = stringResource(R.string.settings_flag_disable_title),
+                    subtitle = stringResource(R.string.settings_flag_disable_sub),
                     checked = disable,
                     onCheckedChange = { toggle(FileSystemRepository.FLAG_DISABLE, disable) { disable = it } }
                 )
                 FlagSwitch(
-                    title = "Force Private Directory",
-                    subtitle = "Creates private_dir.jpg – use per-app Camera1 path (legacy)",
+                    title = stringResource(R.string.settings_flag_private_title),
+                    subtitle = stringResource(R.string.settings_flag_private_sub),
                     checked = privateDir,
                     onCheckedChange = { toggle(FileSystemRepository.FLAG_PRIVATE_DIR, privateDir) { privateDir = it } }
                 )
                 FlagSwitch(
-                    title = "Enable Video Audio",
-                    subtitle = "Creates no-silent.jpg – allow audio from virtual.mp4 (legacy)",
+                    title = stringResource(R.string.settings_flag_audio_title),
+                    subtitle = stringResource(R.string.settings_flag_audio_sub),
                     checked = noSilent,
                     onCheckedChange = { toggle(FileSystemRepository.FLAG_NO_SILENT, noSilent) { noSilent = it } }
                 )
                 FlagSwitch(
-                    title = "Suppress Toasts",
-                    subtitle = "Creates no_toast.jpg – hide toast messages (legacy)",
+                    title = stringResource(R.string.settings_flag_toast_title),
+                    subtitle = stringResource(R.string.settings_flag_toast_sub),
                     checked = noToast,
                     onCheckedChange = { toggle(FileSystemRepository.FLAG_NO_TOAST, noToast) { noToast = it } }
                 )
                 FlagSwitch(
-                    title = "Force Show",
-                    subtitle = "Creates force_show.jpg (legacy)",
+                    title = stringResource(R.string.settings_flag_forceshow_title),
+                    subtitle = stringResource(R.string.settings_flag_forceshow_sub),
                     checked = forceShow,
                     onCheckedChange = { toggle(FileSystemRepository.FLAG_FORCE_SHOW, forceShow) { forceShow = it } }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Text("About", style = MaterialTheme.typography.titleMedium)
                 Text(
-                    text = "VirtualCam Manager v2.0.0-dev\n" +
-                            "Pure Magisk + Zygisk (NO LSPosed).\n" +
-                            "Native OpenGL interception + AMediaCodec.\n" +
-                            "Device verification required before claiming a full camera spoof.",
+                    stringResource(R.string.settings_about),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                // 版本号取自 BuildConfig，避免像原来那样把 "v2.0.0-dev" 写死在界面里与实际版本脱节
+                Text(
+                    text = stringResource(R.string.settings_about_body, BuildConfig.VERSION_NAME),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

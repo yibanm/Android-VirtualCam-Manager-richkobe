@@ -1,15 +1,22 @@
 package com.virtualcam.manager.data
 
+import android.content.Context
+import com.virtualcam.manager.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
  * One-shot automation: prepare the pure-Magisk VirtualCam environment
  * from the APK with root. No manual shell steps required.
+ *
+ * 传入 Context 以便把回传给界面的提示文案本地化（中/英）。这里持有的是
+ * applicationContext，不会因长期引用 Activity 造成泄漏。
  */
 class AutoSetup(
+    context: Context,
     private val fs: FileSystemRepository = FileSystemRepository()
 ) {
+    private val appContext = context.applicationContext
 
     data class Result(
         val rootOk: Boolean,
@@ -29,7 +36,7 @@ class AutoSetup(
                 controlDirOk = false,
                 moduleDetected = false,
                 enabledWritten = false,
-                message = "Root not granted. Open Magisk and allow this app."
+                message = appContext.getString(R.string.msg_root_not_granted)
             )
         }
 
@@ -64,11 +71,21 @@ class AutoSetup(
 
         RootShell.exec("date +%s > /data/adb/virtualcam/last_setup")
 
+        // 提示文案分段取自资源，按空格拼接；每段末尾的标点由资源本身控制
         val msg = buildString {
-            append(if (enable) "VirtualCam ENABLED. " else "VirtualCam DISABLED. ")
-            if (!module) append("Flash Magisk module + reboot for Zygisk path. ")
-            if (enable) append("Open any camera app to test.")
-            else append("Camera apps will see the real camera again.")
+            append(
+                appContext.getString(
+                    if (enable) R.string.msg_setup_enabled else R.string.msg_setup_disabled
+                )
+            ).append(' ')
+            if (!module) {
+                append(appContext.getString(R.string.msg_setup_need_module)).append(' ')
+            }
+            append(
+                appContext.getString(
+                    if (enable) R.string.msg_setup_test else R.string.msg_setup_real_camera
+                )
+            )
         }
 
         Result(

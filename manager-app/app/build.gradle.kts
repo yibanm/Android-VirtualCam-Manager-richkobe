@@ -26,8 +26,8 @@ android {
         applicationId = "com.virtualcam.manager"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2200
-        versionName = "2.2.0"
+        versionCode = 2201
+        versionName = "2.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -72,6 +72,9 @@ android {
     }
     buildFeatures {
         compose = true
+        // AGP 8.x 中 buildConfig 默认关闭；开启后可用 BuildConfig.VERSION_NAME
+        // 替代界面里硬编码的版本号（原代码写死 "v2.0.0-dev"，已与实际版本脱节）
+        buildConfig = true
     }
     packaging {
         resources {

@@ -1,4 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">VirtualCam Manager</string>
+
+    <!-- 底部导航 -->
+    <string name="nav_home">Home</string>
+    <string name="nav_info">Info</string>
+    <string name="nav_media">Media</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- 通用 -->
+    <string name="action_refresh">Refresh</string>
+    <string name="action_open_repository">Open project repository</string>
+
+    <!-- 主页顶栏与状态卡 -->
+    <string name="home_title">VirtualCam</string>
+    <string name="home_msg_importing">Importing…</string>
+    <string name="home_msg_ready_open_camera">Ready — open any camera app</string>
+
+    <string name="home_state_need_root_title">Grant root</string>
+    <string name="home_state_need_root_body">Allow root in Magisk for this app, then refresh.</string>
+    <string name="home_state_need_module_title">Flash Magisk module</string>
+    <string name="home_state_need_module_body">Install the Magisk zip, enable Zygisk, reboot.</string>
+    <string name="home_state_need_video_title">Pick a video or image</string>
+    <string name="home_state_need_video_body">One tap below. Images become a looping video.</string>
+    <string name="home_state_need_enable_title">Turn VirtualCam ON</string>
+    <string name="home_state_need_enable_body">Flip the switch. Then open any camera app.</string>
+    <string name="home_state_active_title">Active</string>
+    <string name="home_state_active_body">Hooks + decoder running. Open a camera app to test the feed.</string>
+    <string name="home_state_starting_title">Starting…</string>
+    <string name="home_state_starting_body">Native path is installing or waiting for frames. Status updates automatically.</string>
+    <string name="home_state_ready_title">Ready</string>
+    <string name="home_state_ready_body">Open any camera app. Status updates automatically.</string>
+
+    <!-- 状态行：参数为 hook 状态码与包名，两者均为技术标识不翻译 -->
+    <string name="home_status_line">Status: %1$s%2$s</string>
+    <string name="home_pkg_suffix">" · %1$s"</string>
+
+    <!-- 遥测 chip -->
+    <string name="home_chip_frames">Frames %1$d</string>
+    <string name="home_chip_tex">Tex %1$s</string>
+    <string name="home_chip_tex_none">—</string>
+    <string name="home_chip_binds">Binds %1$d</string>
+
+    <!-- 开关卡 -->
+    <string name="home_switch_on">VirtualCam is ON</string>
+    <string name="home_switch_off">VirtualCam is OFF</string>
+    <string name="home_switch_on_sub">Native GL path active — open a camera app</string>
+    <string name="home_switch_off_sub">Tap to turn on</string>
+
+    <!-- 素材按钮 -->
+    <string name="home_pick_working">Working…</string>
+    <string name="home_pick_replace">Replace video / image</string>
+    <string name="home_pick_choose">Pick video or image</string>
+    <string name="home_pick_hint_image">Images become a short looping video automatically.</string>
+
+    <!-- 说明与详情 -->
+    <string name="home_expect_title">What to expect right now</string>
+    <string name="home_expect_body">The GL path tries GL_TEXTURE_EXTERNAL_OES via AHardwareBuffer + EGLImage (samplerExternalOES), and falls back to 2D if the extensions are unavailable. Watch Frames / Binds rise; Status may show oes_ready or oes_fallback_2d. Device verification is still required for a real camera spoof.</string>
+    <string name="home_details_show">Show details</string>
+    <string name="home_details_hide">Hide details</string>
+
+    <string name="home_check_root">Root</string>
+    <string name="home_check_magisk">Magisk</string>
+    <string name="home_check_module">Module</string>
+    <string name="home_check_module_version">Module (%1$s)</string>
+    <string name="home_check_zygisk_so">Zygisk .so</string>
+    <string name="home_check_virtual_mp4">virtual.mp4</string>
+    <string name="home_check_enabled">Enabled</string>
+
+    <string name="home_hook_line">Hook: %1$s%2$s</string>
+    <string name="home_telemetry_line">Telemetry: frames=%1$d  texture=%2$s  binds=%3$d  path=%4$s</string>
+    <string name="home_arch_note">The current build uses native OpenGL interception (ShadowHook + MediaCodec + OES/2D). Device verification is required before claiming a full camera spoof.</string>
+
+    <!-- 素材页 -->
+    <string name="media_title">Media Hub</string>
+    <string name="media_msg_processing">Processing…</string>
+    <string name="media_section_upload">Upload spoof media</string>
+    <string name="media_state_ready">Ready</string>
+    <string name="media_state_missing">Not installed</string>
+    <string name="media_pick_video">Pick video</string>
+    <string name="media_pick_image">Pick image (→ looping MP4)</string>
+    <string name="media_pick_any">Pick any file</string>
+    <string name="media_removed">Removed</string>
+    <string name="media_remove">Remove virtual.mp4</string>
+    <string name="media_camera1_contents">Camera1 contents</string>
+
+    <!-- 设置页 -->
+    <string name="settings_title">Settings &amp; Flags</string>
+    <string name="settings_flags_section">Runtime Flags</string>
+    <string name="settings_flags_intro">These create or delete the classic .jpg sentinel files under DCIM/Camera1. The primary ON/OFF switch is the Home screen toggle, which writes /data/adb/virtualcam/enabled.</string>
+
+    <string name="settings_flag_disable_title">Disable Module</string>
+    <string name="settings_flag_disable_sub">Creates disable.jpg — forces gate_off even if the enabled flag is set</string>
+    <string name="settings_flag_private_title">Force Private Directory</string>
+    <string name="settings_flag_private_sub">Creates private_dir.jpg — use the per-app Camera1 path (legacy)</string>
+    <string name="settings_flag_audio_title">Enable Video Audio</string>
+    <string name="settings_flag_audio_sub">Creates no-silent.jpg — allow audio from virtual.mp4 (legacy)</string>
+    <string name="settings_flag_toast_title">Suppress Toasts</string>
+    <string name="settings_flag_toast_sub">Creates no_toast.jpg — hide toast messages (legacy)</string>
+    <string name="settings_flag_forceshow_title">Force Show</string>
+    <string name="settings_flag_forceshow_sub">Creates force_show.jpg (legacy)</string>
+
+    <string name="settings_about">About</string>
+    <string name="settings_about_body">VirtualCam Manager v%1$s\nPure Magisk + Zygisk (no LSPosed).\nNative OpenGL interception + AMediaCodec.\nDevice verification is required before claiming a full camera spoof.</string>
+
+    <!-- 架构页 -->
+    <string name="arch_title">Architecture</string>
+    <string name="arch_headline">Pure Magisk + Single APK</string>
+    <string name="arch_works_title">What works now (v%1$s)</string>
+    <string name="arch_works_body">• Magisk module + Zygisk native library (multi-ABI, 16 KB pages)\n• This APK manages virtual.mp4 and the enable flag (3-step flow)\n• No LSPosed / Xposed / second framework\n• Native OpenGL interception (ShadowHook on glBindTexture / glDraw*)\n• AMediaCodec continuous decode → RGB texture upload\n• Status written to /data/adb/virtualcam/hook_status</string>
+    <string name="arch_limit_title">Honest limitation</string>
+    <string name="arch_limit_body">The current GL path uploads RGB into a GL_TEXTURE_2D and redirects EXTERNAL_OES binds. Many Camera2 / CameraX shaders use samplerExternalOES and may ignore a 2D texture. An OES SurfaceTexture / EGLImage path is the next step for broader app coverage.\n\nDo not treat this as a full camera spoof until real apps show the virtual feed on device.</string>
+    <string name="arch_install_title">Install (3 steps)</string>
+    <string name="arch_install_body">1. Magisk → Zygisk ON → flash the module zip → reboot\n2. Install this Manager APK → grant root\n3. Home → pick a video or image → turn VirtualCam ON → open any camera app</string>
+    <string name="arch_files_title">Control plane files</string>
+    <string name="arch_files_body">/data/adb/virtualcam/enabled\n/data/adb/virtualcam/hook_status\n/data/adb/virtualcam/virtual.mp4  (fallback)\n/storage/emulated/0/DCIM/Camera1/virtual.mp4  (primary)</string>
+
+    <!-- data 层回传给界面的消息 -->
+    <string name="msg_root_not_granted">Root not granted. Open Magisk and allow this app.</string>
+    <string name="msg_setup_enabled">VirtualCam ENABLED.</string>
+    <string name="msg_setup_disabled">VirtualCam DISABLED.</string>
+    <string name="msg_setup_need_module">Flash the Magisk module and reboot for the Zygisk path.</string>
+    <string name="msg_setup_test">Open any camera app to test.</string>
+    <string name="msg_setup_real_camera">Camera apps will see the real camera again.</string>
+
+    <string name="msg_import_unsupported">Unsupported type: %1$s</string>
+    <string name="msg_import_unreadable">Cannot read the selected file</string>
+    <string name="msg_import_empty">Selected file is empty</string>
+    <string name="msg_import_decode_fail">Could not decode the image</string>
+    <string name="msg_import_mp4_fail">Failed to prepare MP4</string>
+    <string name="msg_import_root_fail">Root copy to Camera1 failed. Grant root and retry.</string>
+    <string name="msg_import_ok">Installed %1$s as virtual.mp4\n/DCIM/Camera1/virtual.mp4\nVirtualCam enabled. Open a camera app to use it.</string>
+    <string name="msg_import_error">Import error: %1$s</string>
+    <string name="msg_kind_video">video</string>
+    <string name="msg_kind_image">image (encoded to looping MP4)</string>
 </resources>

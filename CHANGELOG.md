@@ -6,6 +6,27 @@
 
 APK 命名中的 ABI 段由构建脚本从产物内部实测得出，不写死：管理 APK 为纯 Kotlin 工程，其 `lib/` 下的 `.so` 全部来自 androidx 依赖，实测打进 arm64-v8a、armeabi-v7a、x86、x86_64 四个 ABI，故标为 `universal`。Magisk 模块内的 zygisk 二进制则单独编译 arm64-v8a、armeabi-v7a、x86_64 三种。
 
+## v2.2.1
+
+界面国际化与仓库入口。文案从代码里的硬编码英文抽到资源文件，新增简体中文；四个页面顶栏右上角统一加入 GitHub 仓库入口。
+
+### 本次更新
+
+- **新增**：中英双语。界面文案原先全部硬编码英文（实测 76 处，且 `strings.xml` 仅有 `app_name` 一条），现抽到 `res/values/strings.xml`（英文，默认）与 `res/values-zh/strings.xml`（简体中文），两份资源键集合完全一致（各 104 条）。语言跟随系统设置自动切换，不提供应用内手动切换。data 层回传给界面的提示文案（导入失败原因、root 未授予、开关结果等 13 处）一并本地化，避免中文界面下出现中英混杂。
+- **新增**：四个页面（主页 / 素材 / 设置 / 架构说明）的顶栏右上角加入 GitHub 仓库图标，点击用系统浏览器打开本仓库。图标为朴素 octocat 剪影、无底色无渐变，着色跟随主题；设备上没有可处理 http(s) 的应用时用 Toast 显示仓库地址，而不是让点击静默无反应。
+- **修复**：设置页与架构页把版本号写死为 `v2.0.0-dev`，与实际版本脱节。现改为读取 `BuildConfig.VERSION_NAME`，并在 `build.gradle.kts` 中开启 `buildConfig`（AGP 8.x 默认关闭）。
+- **优化**：导航栏标题由字符串常量改为资源引用（`Screen.title: String` → `Screen.titleRes: @StringRes Int`），以便随语言切换。
+
+### 未改动的部分
+
+- `zygisk-native/jni/nv21_hooks.cpp` 仍是上游遗留死代码（未被 `CMakeLists.txt` 编译），本版按最小改动原则未接入。
+- `FailureDoctorCard.kt` 全仓库零调用点，同样是死代码，其中的英文文案未一并国际化，以免扩大改动面。
+- hook 状态码（`surface_playing`、`oes_ready` 等）、设备路径、`virtual.mp4` 等文件名、`pathMode` 枚举均按技术标识保留英文原文，不翻译。
+
+### 已知限制
+
+与 v2.2.0 相同，见下方 v2.2.0 小节的「已知限制」。本版新增的界面改动同样**未在真机验证**：编译通过（`:app:compileReleaseKotlin` 与 `assembleRelease` 均 BUILD SUCCESSFUL），资源已实测打进包内（`aapt2 dump resources` 可见 `zh`/`zh-rCN`/`zh-rHK`/`zh-rTW` 配置与中文字符串，`drawable/ic_github` 存在于资源表），但中文界面下的实际显示效果、图标点击行为均未在设备上确认。
+
 ## v2.2.0
 
 本版核心是修掉一个"装上却不生效"的隐性问题：模块依赖的 inline hook 框架 ShadowHook 被钉在 1.0.10，而该版本官方仅声明兼容到 Android 15，在 Android 16 设备上 hook 会静默失效。同时把整条工具链升到与 Android 16（API 36）匹配的版本，并补齐签名与产物校验。

@@ -17,10 +17,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier as M
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.virtualcam.manager.R
 import com.virtualcam.manager.data.AutoSetup
 import com.virtualcam.manager.data.MediaImportHelper
 import com.virtualcam.manager.data.PrerequisiteChecker
+import com.virtualcam.manager.ui.components.GitHubRepoAction
 import com.virtualcam.manager.ui.theme.Danger
 import com.virtualcam.manager.ui.theme.Primary
 import com.virtualcam.manager.ui.theme.Success
@@ -32,7 +35,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen() {
     val ctx = LocalContext.current
     val checker = remember { PrerequisiteChecker() }
-    val setup = remember { AutoSetup() }
+    val setup = remember { AutoSetup(ctx) }
     val importer = remember { MediaImportHelper() }
     var status by remember { mutableStateOf(checker.let { null as com.virtualcam.manager.data.PrerequisiteStatus? }) }
     var loading by remember { mutableStateOf(true) }
@@ -65,11 +68,14 @@ fun HomeScreen() {
         }
     }
 
+    val msgImporting = stringResource(R.string.home_msg_importing)
+    val msgReadyOpenCamera = stringResource(R.string.home_msg_ready_open_camera)
+
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
             busy = true
-            msg = "Importing..."
+            msg = msgImporting
             msgOk = true
             val r = importer.importFromUri(ctx, uri)
             msg = r.message
@@ -77,7 +83,7 @@ fun HomeScreen() {
             if (r.success && status?.rootAvailable == true) {
                 setup.runFullSetup(enable = true)
                 enabled = true
-                msg = "Ready — open any camera app"
+                msg = msgReadyOpenCamera
                 msgOk = true
             }
             status = checker.check()
@@ -88,10 +94,15 @@ fun HomeScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("VirtualCam") },
+                title = { Text(stringResource(R.string.home_title)) },
                 actions = {
+                    // 右上角：项目仓库入口，图标为朴素 octocat 剪影、tint 随主题
+                    GitHubRepoAction()
                     IconButton(onClick = { refresh() }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = stringResource(R.string.action_refresh)
+                        )
                     }
                 }
             )
@@ -143,14 +154,43 @@ fun HomeScreen() {
                 hook.isNotEmpty()
             )
 
+            // 状态卡的标题/正文/是否正常：hook 状态码本身是技术标识，不参与翻译
             val (title, body, ok) = when {
-                !rootOk -> Triple("Grant root", "Allow root in Magisk for this app, then refresh.", false)
-                !modOk -> Triple("Flash Magisk module", "Install the Magisk zip, enable Zygisk, reboot.", false)
-                !vidOk -> Triple("Pick a video or image", "One tap below. Images become a looping video.", false)
-                !enabled -> Triple("Turn VirtualCam ON", "Flip the switch. Then open any camera app.", false)
-                live -> Triple("Active", "Hooks + decoder running. Open a camera app to test the feed.", true)
-                partial -> Triple("Starting…", "Native path is installing or waiting for frames. Status updates automatically.", true)
-                else -> Triple("Ready", "Open any camera app. Status updates automatically.", true)
+                !rootOk -> Triple(
+                    stringResource(R.string.home_state_need_root_title),
+                    stringResource(R.string.home_state_need_root_body),
+                    false
+                )
+                !modOk -> Triple(
+                    stringResource(R.string.home_state_need_module_title),
+                    stringResource(R.string.home_state_need_module_body),
+                    false
+                )
+                !vidOk -> Triple(
+                    stringResource(R.string.home_state_need_video_title),
+                    stringResource(R.string.home_state_need_video_body),
+                    false
+                )
+                !enabled -> Triple(
+                    stringResource(R.string.home_state_need_enable_title),
+                    stringResource(R.string.home_state_need_enable_body),
+                    false
+                )
+                live -> Triple(
+                    stringResource(R.string.home_state_active_title),
+                    stringResource(R.string.home_state_active_body),
+                    true
+                )
+                partial -> Triple(
+                    stringResource(R.string.home_state_starting_title),
+                    stringResource(R.string.home_state_starting_body),
+                    true
+                )
+                else -> Triple(
+                    stringResource(R.string.home_state_ready_title),
+                    stringResource(R.string.home_state_ready_body),
+                    true
+                )
             }
 
             Card(
@@ -167,9 +207,12 @@ fun HomeScreen() {
                     Text(title, style = MaterialTheme.typography.titleLarge)
                     Text(body, style = MaterialTheme.typography.bodyMedium)
                     if (enabled && hook.isNotEmpty()) {
-                        val pkgSuffix = s?.lastHookPkg?.let { pkg -> " · $pkg" } ?: ""
+                        // 包名后缀用独立资源拼接，避免把技术标识塞进翻译文本
+                        val pkgSuffix = s?.lastHookPkg?.let { pkg ->
+                            stringResource(R.string.home_pkg_suffix, pkg)
+                        } ?: ""
                         Text(
-                            "Status: $hook$pkgSuffix",
+                            stringResource(R.string.home_status_line, hook, pkgSuffix),
                             style = MaterialTheme.typography.bodySmall,
                             color = when {
                                 live -> Success
@@ -182,13 +225,14 @@ fun HomeScreen() {
             }
 
             if (enabled && (frames > 0 || texId > 0 || hits > 0 || live || partial)) {
+                val texNone = stringResource(R.string.home_chip_tex_none)
                 Row(
                     M.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     AssistChip(
                         onClick = {},
-                        label = { Text("Frames $frames") },
+                        label = { Text(stringResource(R.string.home_chip_frames, frames)) },
                         colors = AssistChipDefaults.assistChipColors(
                             containerColor = if (frames > 0) Success.copy(alpha = 0.18f)
                             else MaterialTheme.colorScheme.surfaceVariant
@@ -196,17 +240,25 @@ fun HomeScreen() {
                     )
                     AssistChip(
                         onClick = {},
-                        label = { Text("Tex ${if (texId > 0) texId else "—"}") }
+                        label = {
+                            Text(
+                                stringResource(
+                                    R.string.home_chip_tex,
+                                    if (texId > 0) texId.toString() else texNone
+                                )
+                            )
+                        }
                     )
                     AssistChip(
                         onClick = {},
-                        label = { Text("Binds $hits") },
+                        label = { Text(stringResource(R.string.home_chip_binds, hits)) },
                         colors = AssistChipDefaults.assistChipColors(
                             containerColor = if (hits > 0) Success.copy(alpha = 0.18f)
                             else MaterialTheme.colorScheme.surfaceVariant
                         )
                     )
                     s?.pathMode?.let { mode ->
+                        // pathMode 是 native 侧写入的技术枚举（如 oes），原样大写显示不翻译
                         AssistChip(
                             onClick = {},
                             label = { Text(mode.uppercase()) },
@@ -227,12 +279,15 @@ fun HomeScreen() {
                 ) {
                     Column(M.weight(1f)) {
                         Text(
-                            if (enabled) "VirtualCam is ON" else "VirtualCam is OFF",
+                            stringResource(
+                                if (enabled) R.string.home_switch_on else R.string.home_switch_off
+                            ),
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
-                            if (enabled) "Native GL path active — open a camera app"
-                            else "Tap to turn on",
+                            stringResource(
+                                if (enabled) R.string.home_switch_on_sub else R.string.home_switch_off_sub
+                            ),
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -266,16 +321,18 @@ fun HomeScreen() {
                 Icon(Icons.Default.Upload, contentDescription = null)
                 Spacer(M.width(8.dp))
                 Text(
-                    when {
-                        busy -> "Working…"
-                        vidOk -> "Replace video / image"
-                        else -> "Pick video or image"
-                    }
+                    stringResource(
+                        when {
+                            busy -> R.string.home_pick_working
+                            vidOk -> R.string.home_pick_replace
+                            else -> R.string.home_pick_choose
+                        }
+                    )
                 )
             }
             if (!vidOk) {
                 Text(
-                    "Images become a short looping video automatically.",
+                    stringResource(R.string.home_pick_hint_image),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -290,14 +347,11 @@ fun HomeScreen() {
                 ) {
                     Column(M.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
-                            "What to expect right now",
+                            stringResource(R.string.home_expect_title),
                             style = MaterialTheme.typography.titleSmall
                         )
                         Text(
-                            "v2.0.2 tries GL_TEXTURE_EXTERNAL_OES via AHardwareBuffer + EGLImage " +
-                                    "(samplerExternalOES path). Falls back to 2D if extensions fail. " +
-                                    "Watch Frames / Binds rise; Status may show oes_ready or oes_fallback_2d. " +
-                                    "Device verification still required for a real camera spoof.",
+                            stringResource(R.string.home_expect_body),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -306,18 +360,27 @@ fun HomeScreen() {
             }
 
             TextButton(onClick = { details = !details }, modifier = M.fillMaxWidth()) {
-                Text(if (details) "Hide details" else "Show details")
+                Text(
+                    stringResource(
+                        if (details) R.string.home_details_hide else R.string.home_details_show
+                    )
+                )
             }
 
             if (details && s != null) {
+                // 详情清单：label 走资源，value 为布尔；Module 一行带版本号
+                val moduleLabel = if (s.moduleVersion != null) {
+                    stringResource(R.string.home_check_module_version, s.moduleVersion!!)
+                } else {
+                    stringResource(R.string.home_check_module)
+                }
                 listOf(
-                    "Root" to s.rootAvailable,
-                    "Magisk" to s.magiskPresent,
-                    (if (s.moduleVersion != null) "Module (${s.moduleVersion})" else "Module") to
-                            (s.moduleInstalled || s.zygiskLibPresent),
-                    "Zygisk .so" to s.zygiskLibPresent,
-                    "virtual.mp4" to s.hasVirtualVideo,
-                    "Enabled" to s.vcamEnabled
+                    stringResource(R.string.home_check_root) to s.rootAvailable,
+                    stringResource(R.string.home_check_magisk) to s.magiskPresent,
+                    moduleLabel to (s.moduleInstalled || s.zygiskLibPresent),
+                    stringResource(R.string.home_check_zygisk_so) to s.zygiskLibPresent,
+                    stringResource(R.string.home_check_virtual_mp4) to s.hasVirtualVideo,
+                    stringResource(R.string.home_check_enabled) to s.vcamEnabled
                 ).forEach { (label, good) ->
                     Card(M.fillMaxWidth().padding(vertical = 3.dp)) {
                         Row(
@@ -335,21 +398,29 @@ fun HomeScreen() {
                     }
                 }
                 s.hookStatus?.let { hs ->
-                    val pkgSuffix = s.lastHookPkg?.let { pkg -> " · $pkg" } ?: ""
+                    val pkgSuffix = s.lastHookPkg?.let { pkg ->
+                        stringResource(R.string.home_pkg_suffix, pkg)
+                    } ?: ""
                     Text(
-                        "Hook: $hs$pkgSuffix",
+                        stringResource(R.string.home_hook_line, hs, pkgSuffix),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
                 if (frames > 0 || texId > 0 || hits > 0) {
+                    val texNone = stringResource(R.string.home_chip_tex_none)
                     Text(
-                        "Telemetry: frames=$frames  texture=$texId  binds=$hits  path=${s.pathMode ?: "—"}",
+                        stringResource(
+                            R.string.home_telemetry_line,
+                            frames,
+                            if (texId > 0) texId.toString() else texNone,
+                            hits,
+                            s.pathMode ?: texNone
+                        ),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
                 Text(
-                    "v2 uses native OpenGL interception (ShadowHook + MediaCodec + OES/2D). " +
-                            "Device verification is required before claiming a full camera spoof.",
+                    stringResource(R.string.home_arch_note),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

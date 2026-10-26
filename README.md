@@ -14,7 +14,7 @@
 - native 层按 16 KB page size 编译（Android 15+ 要求）
 - ShadowHook 2.0.1，官方声明兼容至 Android 17
 
-## 当前状态（v2.2.0）
+## 当前状态（v2.2.1）
 
 | 层级 | 状态 |
 |---|---|
@@ -33,17 +33,19 @@
 
 ## 下载与安装
 
-本仓库**不创建公开 Release**（上游无 LICENSE 文件，取得授权前不公开发布）。产物从 Actions 构建记录获取，需登录 GitHub 账号。
+产物从 **Releases** 页下载，无需登录：[https://github.com/yibanm/Android-VirtualCam-Manager-richkobe/releases](https://github.com/yibanm/Android-VirtualCam-Manager-richkobe/releases)
+
+需要说明：上游 `smithluke874/Android-VirtualCam-Manager` 未提供 LICENSE 文件，默认保留所有权利。本仓库的 Release 仅作个人设备自用分发，不构成对上游代码的再授权；取得作者授权前不对外推广。
 
 | 平台 | 文件 | 安装方式 |
 |---|---|---|
-| Android（通用包） | `virtualcam-manager-2.2.0-android-universal.apk` | 传到手机点击安装，需允许「安装未知应用」 |
-| Android（调试版） | `virtualcam-manager-2.2.0-android-universal-debug.apk` | 同上，带调试信息 |
-| Magisk 模块 | `VirtualCam-Manager-Magisk-v2.2.0.zip` | Magisk/KernelSU → Modules → 从存储安装 → **重启** |
+| Android（通用包） | `virtualcam-manager-2.2.1-android-universal.apk` | 传到手机点击安装，需允许「安装未知应用」 |
+| Magisk 模块 | `VirtualCam-Manager-Magisk-v2.2.1.zip` | Magisk/KernelSU → Modules → 从存储安装 → **重启** |
+| 校验和 | `SHA256SUMS.txt` | `sha256sum -c SHA256SUMS.txt` 校验下载完整性 |
 
-APK 命名里的 ABI 段由 CI 从产物内部实测得出（本包为 `universal`，含 arm64-v8a / armeabi-v7a / x86 / x86_64 四个 ABI 的 androidx 依赖库）；Magisk 模块的 zygisk 二进制则单独提供 arm64-v8a、armeabi-v7a、x86_64 三种。另附 `SHA256SUMS.txt` 供校验下载完整性。
+APK 命名里的 ABI 段由 CI 从产物内部实测得出（本包为 `universal`，含 arm64-v8a / armeabi-v7a / x86 / x86_64 四个 ABI 的 androidx 依赖库）；Magisk 模块的 zygisk 二进制则单独提供 arm64-v8a、armeabi-v7a、x86_64 三种。
 
-下载路径：本仓库 **Actions** 页 → 最新一次绿色成功的 `Build Signed APK + Magisk Module` → 页面底部 **Artifacts**。
+Release 里的 APK 由固定的 release keystore 签名（证书 `CN=VirtualCam Manager Richkobe`），后续版本可覆盖安装。**CI artifact 里的 APK 是 debug 签名**（未配置 keystore secret 时的回退），每次 CI 运行的 debug 证书都不同、无法覆盖安装，因此发布产物取本机构建而非 CI artifact；Magisk 模块两者皆可（zip 内容与构建环境无关，CI 版在 ubuntu 上打包、行尾天然 LF）。
 
 安装顺序（三步）：
 

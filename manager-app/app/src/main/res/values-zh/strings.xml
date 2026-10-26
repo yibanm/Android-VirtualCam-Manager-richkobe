@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">虚拟摄像头管理</string>
+
+    <!-- 底部导航 -->
+    <string name="nav_home">主页</string>
+    <string name="nav_info">说明</string>
+    <string name="nav_media">素材</string>
+    <string name="nav_settings">设置</string>
+
+    <!-- 通用 -->
+    <string name="action_refresh">刷新</string>
+    <string name="action_open_repository">打开项目仓库</string>
+
+    <!-- 主页顶栏与状态卡 -->
+    <string name="home_title">虚拟摄像头</string>
+    <string name="home_msg_importing">正在导入…</string>
+    <string name="home_msg_ready_open_camera">已就绪 — 打开任意相机应用</string>
+
+    <string name="home_state_need_root_title">授予 root 权限</string>
+    <string name="home_state_need_root_body">在 Magisk 中允许本应用获取 root，然后刷新。</string>
+    <string name="home_state_need_module_title">刷入 Magisk 模块</string>
+    <string name="home_state_need_module_body">安装 Magisk 模块 zip，开启 Zygisk，然后重启。</string>
+    <string name="home_state_need_video_title">选择视频或图片</string>
+    <string name="home_state_need_video_body">点下方按钮即可。图片会自动转成循环视频。</string>
+    <string name="home_state_need_enable_title">打开虚拟摄像头</string>
+    <string name="home_state_need_enable_body">拨动开关，然后打开任意相机应用。</string>
+    <string name="home_state_active_title">运行中</string>
+    <string name="home_state_active_body">hook 与解码器均在运行。打开相机应用即可测试画面。</string>
+    <string name="home_state_starting_title">启动中…</string>
+    <string name="home_state_starting_body">native 路径正在安装，或在等待画面帧。状态会自动更新。</string>
+    <string name="home_state_ready_title">已就绪</string>
+    <string name="home_state_ready_body">打开任意相机应用。状态会自动更新。</string>
+
+    <!-- 状态行：hook 状态码与包名为技术标识，保留原文 -->
+    <string name="home_status_line">状态：%1$s%2$s</string>
+    <string name="home_pkg_suffix">" · %1$s"</string>
+
+    <!-- 遥测 chip -->
+    <string name="home_chip_frames">帧数 %1$d</string>
+    <string name="home_chip_tex">纹理 %1$s</string>
+    <string name="home_chip_tex_none">—</string>
+    <string name="home_chip_binds">绑定 %1$d</string>
+
+    <!-- 开关卡 -->
+    <string name="home_switch_on">虚拟摄像头已开启</string>
+    <string name="home_switch_off">虚拟摄像头已关闭</string>
+    <string name="home_switch_on_sub">native GL 路径已激活 — 打开相机应用</string>
+    <string name="home_switch_off_sub">点按开启</string>
+
+    <!-- 素材按钮 -->
+    <string name="home_pick_working">处理中…</string>
+    <string name="home_pick_replace">替换视频 / 图片</string>
+    <string name="home_pick_choose">选择视频或图片</string>
+    <string name="home_pick_hint_image">图片会自动转成一段循环播放的短视频。</string>
+
+    <!-- 说明与详情 -->
+    <string name="home_expect_title">当前的实际行为</string>
+    <string name="home_expect_body">GL 路径会先尝试通过 AHardwareBuffer + EGLImage 使用 GL_TEXTURE_EXTERNAL_OES（samplerExternalOES），扩展不可用时回退到 2D。留意帧数与绑定计数是否上升；状态可能显示 oes_ready 或 oes_fallback_2d。要实现真正的摄像头替换仍需真机验证。</string>
+    <string name="home_details_show">展开详情</string>
+    <string name="home_details_hide">收起详情</string>
+
+    <string name="home_check_root">Root</string>
+    <string name="home_check_magisk">Magisk</string>
+    <string name="home_check_module">模块</string>
+    <string name="home_check_module_version">模块（%1$s）</string>
+    <string name="home_check_zygisk_so">Zygisk .so</string>
+    <string name="home_check_virtual_mp4">virtual.mp4</string>
+    <string name="home_check_enabled">已启用</string>
+
+    <string name="home_hook_line">Hook：%1$s%2$s</string>
+    <string name="home_telemetry_line">遥测：frames=%1$d  texture=%2$s  binds=%3$d  path=%4$s</string>
+    <string name="home_arch_note">当前构建使用 native OpenGL 拦截（ShadowHook + MediaCodec + OES/2D）。在声称能完整替换摄像头画面之前，必须先做真机验证。</string>
+
+    <!-- 素材页 -->
+    <string name="media_title">素材中心</string>
+    <string name="media_msg_processing">处理中…</string>
+    <string name="media_section_upload">上传替换素材</string>
+    <string name="media_state_ready">已就绪</string>
+    <string name="media_state_missing">未安装</string>
+    <string name="media_pick_video">选择视频</string>
+    <string name="media_pick_image">选择图片（→ 转循环 MP4）</string>
+    <string name="media_pick_any">选择任意文件</string>
+    <string name="media_removed">已移除</string>
+    <string name="media_remove">移除 virtual.mp4</string>
+    <string name="media_camera1_contents">Camera1 目录内容</string>
+
+    <!-- 设置页 -->
+    <string name="settings_title">设置与开关</string>
+    <string name="settings_flags_section">运行时开关</string>
+    <string name="settings_flags_intro">这些开关会在 DCIM/Camera1 下创建或删除传统的 .jpg 标记文件。主开关是主页的那个拨动开关，它写入 /data/adb/virtualcam/enabled。</string>
+
+    <string name="settings_flag_disable_title">停用模块</string>
+    <string name="settings_flag_disable_sub">创建 disable.jpg — 即使已启用也强制 gate_off</string>
+    <string name="settings_flag_private_title">强制使用私有目录</string>
+    <string name="settings_flag_private_sub">创建 private_dir.jpg — 使用按应用隔离的 Camera1 路径（传统方式）</string>
+    <string name="settings_flag_audio_title">开启视频声音</string>
+    <string name="settings_flag_audio_sub">创建 no-silent.jpg — 允许播放 virtual.mp4 的声音（传统方式）</string>
+    <string name="settings_flag_toast_title">屏蔽气泡提示</string>
+    <string name="settings_flag_toast_sub">创建 no_toast.jpg — 隐藏气泡消息（传统方式）</string>
+    <string name="settings_flag_forceshow_title">强制显示提示</string>
+    <string name="settings_flag_forceshow_sub">创建 force_show.jpg（传统方式）</string>
+
+    <string name="settings_about">关于</string>
+    <string name="settings_about_body">虚拟摄像头管理 v%1$s\n纯 Magisk + Zygisk（不依赖 LSPosed）。\nnative OpenGL 拦截 + AMediaCodec。\n在声称能完整替换摄像头画面之前，必须先做真机验证。</string>
+
+    <!-- 架构页 -->
+    <string name="arch_title">架构说明</string>
+    <string name="arch_headline">纯 Magisk + 单个 APK</string>
+    <string name="arch_works_title">当前已实现（v%1$s）</string>
+    <string name="arch_works_body">• Magisk 模块 + Zygisk native 库（多 ABI，16 KB page size）\n• 本 APK 负责管理 virtual.mp4 与启用标志（三步上手）\n• 不依赖 LSPosed / Xposed / 第二套框架\n• native OpenGL 拦截（ShadowHook 挂 glBindTexture / glDraw*）\n• AMediaCodec 持续解码 → 上传为 RGB 纹理\n• 状态写入 /data/adb/virtualcam/hook_status</string>
+    <string name="arch_limit_title">如实说明的限制</string>
+    <string name="arch_limit_body">当前 GL 路径把 RGB 上传到 GL_TEXTURE_2D，并重定向 EXTERNAL_OES 的绑定。许多 Camera2 / CameraX 的着色器使用 samplerExternalOES，可能会忽略 2D 纹理。要覆盖更多应用，下一步需要 OES SurfaceTexture / EGLImage 路径。\n\n在真实应用确实显示替换画面之前，不要把它当作完整的摄像头替换。</string>
+    <string name="arch_install_title">安装（三步）</string>
+    <string name="arch_install_body">1. Magisk → 开启 Zygisk → 刷入模块 zip → 重启\n2. 安装本管理 APK → 授予 root\n3. 主页 → 选择视频或图片 → 打开虚拟摄像头开关 → 打开任意相机应用</string>
+    <string name="arch_files_title">控制面文件</string>
+    <string name="arch_files_body">/data/adb/virtualcam/enabled\n/data/adb/virtualcam/hook_status\n/data/adb/virtualcam/virtual.mp4  （兜底）\n/storage/emulated/0/DCIM/Camera1/virtual.mp4  （主用）</string>
+
+    <!-- data 层回传给界面的消息 -->
+    <string name="msg_root_not_granted">未获得 root 权限。请打开 Magisk 并允许本应用。</string>
+    <string name="msg_setup_enabled">虚拟摄像头已启用。</string>
+    <string name="msg_setup_disabled">虚拟摄像头已停用。</string>
+    <string name="msg_setup_need_module">请刷入 Magisk 模块并重启，以启用 Zygisk 路径。</string>
+    <string name="msg_setup_test">打开任意相机应用进行测试。</string>
+    <string name="msg_setup_real_camera">相机应用将重新看到真实摄像头。</string>
+
+    <string name="msg_import_unsupported">不支持的类型：%1$s</string>
+    <string name="msg_import_unreadable">无法读取所选文件</string>
+    <string name="msg_import_empty">所选文件为空</string>
+    <string name="msg_import_decode_fail">图片解码失败</string>
+    <string name="msg_import_mp4_fail">生成 MP4 失败</string>
+    <string name="msg_import_root_fail">以 root 复制到 Camera1 失败。请授予 root 后重试。</string>
+    <string name="msg_import_ok">已将%1$s安装为 virtual.mp4\n/DCIM/Camera1/virtual.mp4\n虚拟摄像头已启用，打开相机应用即可使用。</string>
+    <string name="msg_import_error">导入出错：%1$s</string>
+    <string name="msg_kind_video">视频</string>
+    <string name="msg_kind_image">图片（已编码为循环 MP4）</string>
+</resources>

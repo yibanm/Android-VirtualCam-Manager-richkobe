@@ -1,13 +1,13 @@
 #!/system/bin/sh
-ui_print "- VirtualCam Manager v2.2.0 (pure Magisk + Zygisk, NO LSPosed)"
+ui_print "- VirtualCam Manager v2.2.1 (pure Magisk + Zygisk, NO LSPosed)"
 ui_print "- Camera1 surface swap + MediaPlayer + GL fallback"
 ui_print "- Magisk → Settings → Zygisk ON, then reboot"
 
 mkdir -p /data/adb/virtualcam
 chmod 755 /data/adb/virtualcam
 echo -n 0 > /data/adb/virtualcam/enabled
-echo -n "2.2.0" > /data/adb/virtualcam/module_version
-echo -n "2.2.0" > /data/adb/virtualcam/version
+echo -n "2.2.1" > /data/adb/virtualcam/module_version
+echo -n "2.2.1" > /data/adb/virtualcam/version
 touch /data/adb/virtualcam/module_installed
 chmod 644 /data/adb/virtualcam/* 2>/dev/null
 
