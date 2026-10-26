@@ -7,8 +7,8 @@ mkdir -p /storage/emulated/0/DCIM/Camera1 2>/dev/null
 chmod 775 /storage/emulated/0/DCIM/Camera1 2>/dev/null
 chmod 755 /data/local/tmp/virtualcam
 restorecon -RF /storage/emulated/0/DCIM/Camera1 2>/dev/null
-echo -n "2.1.0" > /data/adb/virtualcam/module_version
-echo -n "2.1.0" > /data/adb/virtualcam/version
+echo -n "2.2.0" > /data/adb/virtualcam/module_version
+echo -n "2.2.0" > /data/adb/virtualcam/version
 chmod 644 /data/adb/virtualcam/module_version 2>/dev/null
 chmod 644 /data/adb/virtualcam/version 2>/dev/null
 if [ -f "$MODDIR/libshadowhook.so" ]; then

@@ -1,0 +1,36 @@
+# Magisk 模块脚本与 Android 侧执行文件必须保持 LF。
+# 这些文件在设备的 /sbin/sh 或 /system/bin/sh 下执行，行尾混入 \r 会让
+# shebang 变成 "#!/sbin/sh\r" 从而找不到解释器，刷机直接失败。
+# Windows 上 core.autocrlf=true 会把工作区副本转成 CRLF，再打包就产出坏模块，
+# 因此在这里显式锁定行尾，不依赖各人的 autocrlf 配置。
+*.sh              text eol=lf
+update-binary     text eol=lf
+updater-script    text eol=lf
+module.prop       text eol=lf
+
+# 自身也锁定 LF，避免本文件在 Windows 上被转成 CRLF
+.gitattributes    text eol=lf
+.gitignore        text eol=lf
+
+# 源码与配置统一 LF，避免跨平台无意义 diff
+*.kt              text eol=lf
+*.kts             text eol=lf
+*.java            text eol=lf
+*.cpp             text eol=lf
+*.h               text eol=lf
+*.hpp             text eol=lf
+*.inc             text eol=lf
+*.xml             text eol=lf
+*.yml             text eol=lf
+*.properties      text eol=lf
+*.md              text eol=lf
+
+# 二进制文件禁止任何行尾转换
+*.so              binary
+*.jar             binary
+*.apk             binary
+*.zip             binary
+*.png             binary
+*.jpg             binary
+*.p12             binary
+*.jks             binary

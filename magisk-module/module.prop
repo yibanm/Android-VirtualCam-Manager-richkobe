@@ -1,6 +1,6 @@
 id=virtualcam_manager
 name=VirtualCam Manager
-version=v2.1.0
-versionCode=2100
-author=smithluke874
-description=Pure Magisk+Zygisk VirtualCam (NO LSPosed). Camera1 surface swap + MediaPlayer + GL/OES fallback. Flash zip, enable Zygisk, install Manager APK.
+version=v2.2.0
+versionCode=2200
+author=smithluke874 (richkobe build)
+description=Pure Magisk+Zygisk VirtualCam (NO LSPosed). Camera1 surface swap + MediaPlayer + GL/OES fallback. Flash zip, enable Zygisk, install Manager APK. ShadowHook 2.0.1 for Android 16 support.

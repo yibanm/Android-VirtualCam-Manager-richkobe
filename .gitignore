@@ -1,0 +1,39 @@
+# Gradle / 构建产物
+.gradle/
+build/
+*/build/
+**/build/
+local.properties
+
+# 签名密钥（红线：绝不入库）
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+
+# native 构建中间产物
+zygisk-native/build-*/
+zygisk-native/.cxx/
+*.o
+*.obj
+# zygisk.hpp 由 CI 从 zygisk-module-sample 动态拉取，本机副本不入库
+zygisk-native/jni/zygisk.hpp
+
+# Magisk 模块内的编译产物（由 CI/本机构建时注入，上游只保留 README.txt）
+magisk-module/zygisk/*.so
+magisk-module/libs/
+magisk-module/libshadowhook.so
+
+# 打包产物（本机出包目录）
+dist/
+*.apk
+*.zip
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# 运行时状态文件（模块在设备上写回的探针文件，误拷进来的）
+.vcam_*
